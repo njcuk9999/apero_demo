@@ -3,6 +3,9 @@
 The aim of these demos is to walk you through some of the key steps in the
 data reduction using APERO.
 
+- [Slides](https://docs.google.com/presentation/d/1fIolyXW1aPX5437BeNRkrmyukoeHmqudNnYj7YaGB04/edit?usp=sharing)
+- [Example solutions](https://github.com/njcuk9999/apero_demo)
+
 ## Prerequisites for exercises 
 
 - Python 3.9  (e.g. via [conda](https://docs.conda.io/en/latest/miniconda.html))
