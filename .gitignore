@@ -33,6 +33,9 @@ MANIFEST
 *.manifest
 *.spec
 
+# ignore fits files
+*.fits
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
