@@ -28,7 +28,7 @@ wave_A_file = 'NIRPS_2022-11-25T12_00_56_233_pp_e2dsff_A_wavesol_ref_A.fits'
 # read relevant data
 loco_a = fits.getdata(loc_A_file)
 loco_B = fits.getdata(loc_B_file)
-wave_A = fits.getdata(wave_A_file)
+wave_a = fits.getdata(wave_A_file)
 
 # need to add a '4' as a constant. We trim the periphery of the pp image
 #   calibrated images do not have the top/bottom/left/right pixels
@@ -50,7 +50,7 @@ index = np.arange(loco_a.shape[1])
 for order_num in range(loco_a.shape[0]):
     # spline the wavelength solution onto the values that will be plotted
     #   to get the pixel positions of the wavelength values
-    xvals = IUSpline(wave_A[order_num], xpix, ext=1)(vals)
+    xvals = IUSpline(wave_a[order_num], xpix, ext=1)(vals)
     # get a mask of good y-pixel locations for this order (fiber A)
     #   (should not be outside the image
     good = (loco_a[order_num] > 0) & (loco_a[order_num] < loco_a.shape[1])
@@ -69,7 +69,7 @@ for order_num in range(loco_a.shape[0]):
         # add text for each point (in yellow)
         for itxt in range(len(xvals_plot)):
             xplt = xvals_plot[itxt]
-            yplt = loco_a[order_num, xvals_plot]
+            yplt = loco_a[order_num, xvals_plot[itxt]]
             txt = '{:.0f}nm'.format(vals_plot[itxt])
             plt.text(xplt, yplt, txt, color='yellow')
     # get a mask of good y-pixel location for this order (fiber B)

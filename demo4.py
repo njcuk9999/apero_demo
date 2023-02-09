@@ -96,7 +96,6 @@ def val_cheby(coeffs, xvector, domain):
 
 
 # all relevant files
-blaze_file = 'NIRPS_2022-11-25T11_55_49_672_pp_blaze_A.fits'
 e2ds_file = 'NIRPS_2023-01-20T08_42_08_941_pp_e2dsff_A.fits'
 wave_file = 'NIRPS_2022-11-25T12_00_56_233_pp_e2dsff_A_wavesol_ref_A.fits'
 
@@ -105,10 +104,10 @@ wavegrid = get_magic_grid()
 # storage for the weights and flux array
 weights = np.zeros_like(wavegrid)
 flux_tmp = np.zeros_like(wavegrid)
-# load the blaze, e2ds and wave file
-blaze = fits.getdata(blaze_file)
+# load the e2ds and blaze file
 e2ds = fits.getdata(e2ds_file)
-header = fits.getdata(e2ds_file)
+header = fits.getheader(e2ds_file)
+blaze = fits.getdata(header['CDBBLAZE'])
 # get the wavelength solution from the header
 wavemap = fits2wave(e2ds, header)
 
@@ -142,7 +141,8 @@ for order_num in tqdm(range(e2ds.shape[0]), leave=False):
 # plot the 1D flux, weights and ratio between the two
 ax[0].plot(wavegrid, flux_tmp, color='blue', alpha=0.6)
 ax[1].plot(wavegrid, weights, color='blue', alpha=0.6)
-ax[2].plot(wavegrid, flux_tmp / weights)
+with warnings.catch_warnings(record=True) as _:
+    ax[2].plot(wavegrid, flux_tmp / weights)
 ax[2].set(xlabel='Wavelength [nm]', ylabel='s1d flux')
 ax[1].set(ylabel='Blaze per order')
 ax[0].set(ylabel='Flux per order')

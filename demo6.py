@@ -97,31 +97,31 @@ file_lblrv = 'NIRPS_2023-01-20T08_42_08_941_pp_e2dsff_tcorr_A_PROXIMA_PROXIMA_lb
 file_recon = 'NIRPS_2023-01-20T08_42_08_941_pp_s1d_v_recon_A.fits'
 
 # reconstructed absorption
-recon = Table.read(file_recon)
-
+recon = Table.read(file_recon, hdu=1)
 # read the LBL file
-tbl = Table.read(file_lblrv)
+tbl = Table.read(file_lblrv, hdu=1)
+# get vectors as numpy arrays
+dv = np.array(tbl['dv'])
+sdv = np.array(tbl['sdv'])
+
 # anything with <20 m/s per line is suspect. To be discussed with team
-bad = tbl['sdv'] < 20
-tbl['dv'][bad] = np.nan
-tbl['sdv'][bad] = np.nan
+bad = sdv < 20
+dv[bad] = np.nan
+sdv[bad] = np.nan
 
 # keep only valid entries in the table
-tbl = tbl[np.isfinite(tbl['dv'])]
+tbl = tbl[np.isfinite(dv)]
 
 # get the mean velocity
-
 # the best way is with a weighted mean
-mu, sig = odd_ratio_mean(tbl['dv'], tbl['sdv'])
+mu, sig = odd_ratio_mean(dv, sdv)
 # but as a simple example we could just take a median and sig of good lines
-"""
-good_lines = tbl['sdv'] > 20 & tbl['sdv'] < 200
-mu = np.nanmedian(tbl['dv'][good_lines])
-sig = np.nanstd(tbl['dv'][good_lines])/np.sqrt(np.sum(good_lines) - 1)
-"""
+good_lines = (sdv) > 20 & (sdv < 200)
+mu_alt = np.nanmedian(dv[good_lines])
+sig_alt = np.nanstd(dv[good_lines])/np.sqrt(np.sum(good_lines) - 1)
 
 # plot the histogram of RV accuracy per line
-v = np.array(tbl['sdv'])
+v = np.array(sdv)
 plt.hist(v[np.isfinite(v)], range=[0, 1000], bins=1000)
 plt.xlabel('RV accuracy per line [m/s]')
 plt.ylabel('Number of lines')
@@ -137,8 +137,10 @@ xx = (xh[1][:-1] + xh[1][1:]) / 2.0
 # starting point for the curve fit
 guess = [1.0, np.max(yy)]
 # gaussian curve fit to the distribution
-fit, _ = curve_fit(gaussian, xx, yy, guess=p0)
+fit, _ = curve_fit(gaussian, xx, yy, p0=guess)
 print('Dispersion relative to expected : {:.4f}'.format(fit[0]))
+
+# plot this dispersion
 plt.plot(xx, gaussian(xx, *fit), 'r--')
 plt.show()
 

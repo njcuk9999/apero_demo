@@ -48,17 +48,17 @@ file_template = 'Template_s1dv_PROXIMA_sc1d_v_file_A.fits'
 file_recon = 'NIRPS_2023-01-20T08_42_08_941_pp_s1d_v_recon_A.fits'
 
 # read the science spectrum
-sp = Table.read(file_sp)
+sp = Table.read(file_sp, hdu=1)
 # avoid masking that messes some operations. Replace with NaNs
 sp['flux'] = np.array(sp['flux'])
 header = fits.getheader(file_sp)
 
 # read template for Proxima
-template = Table.read(file_template)
+template = Table.read(file_template, hdu=1)
 template['flux'] = np.array(template['flux'])
 
 # read reconstructed absorption to know abso at given residual position
-recon = Table.read(file_recon)
+recon = Table.read(file_recon, hdu=1)
 recon['flux'] = np.array(recon['flux'])
 
 # construct a spline to Doppler-shift the template
@@ -74,10 +74,12 @@ berv = header['BERV'] * 1000
 # update the template with the obsevation's BERV
 template['flux'] = spl(doppler(template['wavelength'], -berv))
 
-# ratio observation to teomplate
-ratio = sp['flux'] / template['flux']
-# normalize to a median of 1
-ratio /= np.nanmedian(ratio)
+
+with warnings.catch_warnings(record=True) as _:
+    # ratio observation to teomplate
+    ratio = sp['flux'] / template['flux']
+    # normalize to a median of 1
+    ratio /= np.nanmedian(ratio)
 
 # Fancy plots to show residuals
 fig, ax = plt.subplots(nrows=3, ncols=1, sharex='all')
