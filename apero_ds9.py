@@ -21,6 +21,7 @@ Created on 2023-02-14
 import sys
 
 import matplotlib.pyplot as plt
+import numpy as np
 from astropy.io import fits
 from astropy.visualization import ImageNormalize
 from astropy.visualization import LinearStretch, LogStretch
@@ -64,24 +65,31 @@ class Visualizer:
 		self.fig.subplots_adjust(bottom=0.2)
 		# ---------------------------------------------------------------------
 		self.linear_stretch_axis = self.fig.add_axes([0.11, 0.05, 0.1, 0.075])
-		self.linear_stretch_btn = Button(self.linear_stretch_axis,
-		                                 'Linear')
+		self.linear_stretch_btn = Button(self.linear_stretch_axis, 'Linear')
 		self.linear_stretch_btn.on_clicked(self.set_linear_strech)
 		# ---------------------------------------------------------------------
 		self.log_stretch_axis = self.fig.add_axes([0.22, 0.05, 0.1, 0.075])
-		self.log_stretch_btn = Button(self.log_stretch_axis,
-		                              'Log')
+		self.log_stretch_btn = Button(self.log_stretch_axis, 'Log')
 		self.log_stretch_btn.on_clicked(self.set_log_strech)
 		# ---------------------------------------------------------------------
 		self.zscale_axis = self.fig.add_axes([0.33, 0.05, 0.1, 0.075])
-		self.zscale_btn = Button(self.zscale_axis,
-		                         'ZScale')
+		self.zscale_btn = Button(self.zscale_axis, 'ZScale')
 		self.zscale_btn.on_clicked(self.set_z_scale)
 		# ---------------------------------------------------------------------
 		self.min_max_axis = self.fig.add_axes([0.44, 0.05, 0.1, 0.075])
-		self.min_max_btn = Button(self.min_max_axis,
-		                          'MinMax')
-		self.min_max_btn.on_clicked(self.set_minmax_scale)
+		self.min_max_btn = Button(self.min_max_axis, 'MinMax')
+		# ---------------------------------------------------------------------
+		self.rotate_axis = self.fig.add_axes([0.55, 0.05, 0.1, 0.075])
+		self.rotate_btn = Button(self.rotate_axis, 'Rotate90')
+		self.rotate_btn.on_clicked(self.rotate_90)
+		# ---------------------------------------------------------------------
+		self.flipx_axis = self.fig.add_axes([0.66, 0.05, 0.1, 0.075])
+		self.flipx_btn = Button(self.flipx_axis, 'FlipX')
+		self.flipx_btn.on_clicked(self.flip_x)
+		# ---------------------------------------------------------------------
+		self.flipy_axis = self.fig.add_axes([0.77, 0.05, 0.1, 0.075])
+		self.flipy_btn = Button(self.flipy_axis, 'FlipY')
+		self.flipy_btn.on_clicked(self.flip_y)
 
 	def imshow(self):
 		# clear main frame
@@ -120,6 +128,17 @@ class Visualizer:
 		self.current_interval = ZScaleInterval
 		self.imshow()
 
+	def rotate_90(self, event):
+		self.current_image = np.rot90(self.current_image)
+		self.imshow()
+
+	def flip_x(self, event):
+		self.current_image = self.current_image[:, ::-1]
+		self.imshow()
+
+	def flip_y(self, event):
+		self.current_image = self.current_image[::-1]
+		self.imshow()
 
 def main():
 	"""
